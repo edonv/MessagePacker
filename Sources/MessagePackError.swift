@@ -15,7 +15,7 @@ enum MessagePackError: Swift.Error {
 }
 
 extension MessagePackError {
-    func asDecodingError<T>(_ type: T.Type, codingPath: [CodingKey]) -> DecodingError {
+    func asDecodingError<T>(_ type: T.Type, codingPath: [any CodingKey]) -> DecodingError {
         switch self {
         case .emptyData:
             let context = DecodingError.Context(codingPath: codingPath, debugDescription: "Expected \(type) value but found null instead.")

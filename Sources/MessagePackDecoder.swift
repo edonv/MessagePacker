@@ -15,7 +15,7 @@ public final class MessagePackDecoder: @unchecked Sendable, Decoder {
 
     public init() {}
 
-    public init(referencing: Data, codingPath: [CodingKey] = []) {
+    public init(referencing: Data, codingPath: [any CodingKey] = []) {
         storage.push(container: referencing)
         self.codingPath = codingPath
     }
@@ -125,7 +125,7 @@ private extension MessagePackDecoder {
 extension MessagePackDecoder {
     struct KeyedContainer<Key: CodingKey>: KeyedDecodingContainerProtocol {
         private let decoder: MessagePackDecoder
-        private(set) var codingPath: [CodingKey]
+        private(set) var codingPath: [any CodingKey]
         private(set) var allKeys: [Key]
         private var container: [String: Data] = [:]
 
@@ -140,7 +140,7 @@ extension MessagePackDecoder {
             return container[key.stringValue] != nil
         }
 
-        func findEntry(by key: CodingKey) throws -> Data {
+        func findEntry(by key: any CodingKey) throws -> Data {
             guard let entry = self.container[key.stringValue] else {
                 let context = DecodingError.Context(codingPath: self.decoder.codingPath, debugDescription: "No value associated with key \(key) (\"\(key.stringValue)\").")
                 throw DecodingError.keyNotFound(key, context)
@@ -259,7 +259,7 @@ extension MessagePackDecoder {
             }
         }
 
-        func _superDecoder(forKey key: CodingKey) throws -> Decoder {
+        func _superDecoder(forKey key: any CodingKey) throws -> Decoder {
             decoder.codingPath.append(key)
             defer { decoder.codingPath.removeLast() }
 
@@ -279,7 +279,7 @@ extension MessagePackDecoder {
 
     struct UnkeyedContainer: UnkeyedDecodingContainer {
         private let decoder: MessagePackDecoder
-        private(set) var codingPath: [CodingKey]
+        private(set) var codingPath: [any CodingKey]
         private(set) var count: Int?
         private var container: [Data]
 
@@ -287,7 +287,7 @@ extension MessagePackDecoder {
             return currentIndex >= count!
         }
 
-        var currentCodingPath: [CodingKey] {
+        var currentCodingPath: [any CodingKey] {
             decoder.codingPath.append(MessagePackKey(index: currentIndex))
             return decoder.codingPath
         }
@@ -460,7 +460,7 @@ extension MessagePackDecoder {
 
     struct SingleValueContainer: SingleValueDecodingContainer {
         private var decoder: MessagePackDecoder
-        private(set) var codingPath: [CodingKey]
+        private(set) var codingPath: [any CodingKey]
         private let container: Data
 
         init(referencing decoder: MessagePackDecoder, container: Data) {

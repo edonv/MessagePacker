@@ -97,18 +97,18 @@ private extension MessagePackEncoder {
 extension MessagePackEncoder {
     class KeyedContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
         private let encoder: MessagePackEncoder
-        private(set) var codingPath: [CodingKey]
+        private(set) var codingPath: [any CodingKey]
         private var count = 0
         private var packedData = Data()
         private let completion: (Data) -> ()
 
-        init(referencing encoder: MessagePackEncoder, codingPath: [CodingKey], completion: @escaping (Data) -> ()) {
+        init(referencing encoder: MessagePackEncoder, codingPath: [any CodingKey], completion: @escaping (Data) -> ()) {
             self.encoder = encoder
             self.codingPath = codingPath
             self.completion = completion
         }
 
-        fileprivate func add(_ value: Data, forKey key: CodingKey) {
+        fileprivate func add(_ value: Data, forKey key: any CodingKey) {
             let key = encoder.boxMessagePack(key.stringValue)
             self.packedData.append(key)
             self.packedData.append(value)
@@ -219,12 +219,12 @@ extension MessagePackEncoder {
 
     final class UnkeyedContainer: UnkeyedEncodingContainer {
         private let encoder: MessagePackEncoder
-        private(set) var codingPath: [CodingKey]
+        private(set) var codingPath: [any CodingKey]
         private(set) var count = 0
         private var packedData = Data()
         private let completion: (Data) -> ()
 
-        init(referencing encoder: MessagePackEncoder, codingPath: [CodingKey], completion: @escaping (Data) -> ()) {
+        init(referencing encoder: MessagePackEncoder, codingPath: [any CodingKey], completion: @escaping (Data) -> ()) {
             self.encoder = encoder
             self.codingPath = codingPath
             self.completion = completion
@@ -340,9 +340,9 @@ extension MessagePackEncoder {
 
     struct SingleValueContainer: SingleValueEncodingContainer {
         private let encoder: MessagePackEncoder
-        private(set) var codingPath: [CodingKey]
+        private(set) var codingPath: [any CodingKey]
 
-        init(referencing encoder: MessagePackEncoder, codingPath: [CodingKey]) {
+        init(referencing encoder: MessagePackEncoder, codingPath: [any CodingKey]) {
             self.encoder = encoder
             self.codingPath = codingPath
         }
@@ -424,7 +424,7 @@ extension MessagePackEncoder {
         private let container: KeyedContainer<Key>
         private let key: CodingKey
 
-        init(container: KeyedContainer<Key>, key: CodingKey) {
+        init(container: KeyedContainer<Key>, key: any CodingKey) {
             self.container = container
             self.key = key
             super.init()
