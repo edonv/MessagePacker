@@ -9,7 +9,7 @@
 import Foundation
 
 public class MessagePackDecoder: Decoder {
-    public var codingPath: [CodingKey] = []
+    public var codingPath: [any CodingKey] = []
     public var userInfo: [CodingUserInfoKey : Any] = [:]
     private var storage = MessagePackStorage()
 
