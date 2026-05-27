@@ -8,9 +8,9 @@
 
 import Foundation
 
-public class MessagePackDecoder: Decoder {
-    public var codingPath: [any CodingKey] = []
-    public var userInfo: [CodingUserInfoKey : Any] = [:]
+public final class MessagePackDecoder: @unchecked Sendable, Decoder {
+    public private(set) var codingPath: [any CodingKey] = []
+    public private(set) var userInfo: [CodingUserInfoKey : Any] = [:]
     private var storage = MessagePackStorage()
 
     public init() {}
