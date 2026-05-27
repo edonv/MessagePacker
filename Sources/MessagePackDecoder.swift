@@ -8,7 +8,7 @@
 
 import Foundation
 
-open class MessagePackDecoder: Decoder {
+public class MessagePackDecoder: Decoder {
     public var codingPath: [CodingKey] = []
     public var userInfo: [CodingUserInfoKey : Any] = [:]
     private var storage = MessagePackStorage()
@@ -55,7 +55,7 @@ open class MessagePackDecoder: Decoder {
         }
     }
 
-    open func decode<T : Decodable>(_ type: T.Type, from container: Data) throws -> T {
+    public func decode<T : Decodable>(_ type: T.Type, from container: Data) throws -> T {
         return try unbox(container, as: type)
     }
 
