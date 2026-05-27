@@ -8,37 +8,39 @@
 
 import Foundation
 
-public class MessagePackEncoder: @unchecked Sendable, Encoder {
+public final class MessagePackEncoder: BaseMessagePackEncoder, @unchecked Sendable {}
+
+public class BaseMessagePackEncoder: Encoder {
     public private(set) var codingPath: [any CodingKey] = []
     public private(set) var userInfo: [CodingUserInfoKey : Any] = [:]
     fileprivate var storage = MessagePackStorage()
-
+    
     public init() {}
-
+    
     public func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
         return KeyedEncodingContainer(KeyedContainer<Key>(referencing: self, codingPath: codingPath) { [weak self] in
             guard let `self` = self else { return }
             self.storage.push(container: $0)
         })
     }
-
+    
     public func unkeyedContainer() -> UnkeyedEncodingContainer {
         return UnkeyedContainer(referencing: self, codingPath: codingPath) { [weak self] in
             guard let `self` = self else { return }
             self.storage.push(container: $0)
         }
     }
-
+    
     public func singleValueContainer() -> SingleValueEncodingContainer {
         return SingleValueContainer(referencing: self, codingPath: codingPath)
     }
-
+    
     public func encode<T: Encodable>(_ value: T) throws -> Data {
         return try box(value)
     }
 }
 
-private extension MessagePackEncoder {
+private extension BaseMessagePackEncoder {
     func boxNil() -> Data {
         return Data([MessagePackType.NilType.firstByte])
     }
@@ -94,15 +96,15 @@ private extension MessagePackEncoder {
     }
 }
 
-extension MessagePackEncoder {
+extension BaseMessagePackEncoder {
     class KeyedContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
-        private let encoder: MessagePackEncoder
+        private let encoder: BaseMessagePackEncoder
         private(set) var codingPath: [any CodingKey]
         private var count = 0
         private var packedData = Data()
         private let completion: (Data) -> ()
 
-        init(referencing encoder: MessagePackEncoder, codingPath: [any CodingKey], completion: @escaping (Data) -> ()) {
+        init(referencing encoder: BaseMessagePackEncoder, codingPath: [any CodingKey], completion: @escaping (Data) -> ()) {
             self.encoder = encoder
             self.codingPath = codingPath
             self.completion = completion
@@ -218,13 +220,13 @@ extension MessagePackEncoder {
     }
 
     final class UnkeyedContainer: UnkeyedEncodingContainer {
-        private let encoder: MessagePackEncoder
+        private let encoder: BaseMessagePackEncoder
         private(set) var codingPath: [any CodingKey]
         private(set) var count = 0
         private var packedData = Data()
         private let completion: (Data) -> ()
 
-        init(referencing encoder: MessagePackEncoder, codingPath: [any CodingKey], completion: @escaping (Data) -> ()) {
+        init(referencing encoder: BaseMessagePackEncoder, codingPath: [any CodingKey], completion: @escaping (Data) -> ()) {
             self.encoder = encoder
             self.codingPath = codingPath
             self.completion = completion
@@ -339,10 +341,10 @@ extension MessagePackEncoder {
     }
 
     struct SingleValueContainer: SingleValueEncodingContainer {
-        private let encoder: MessagePackEncoder
+        private let encoder: BaseMessagePackEncoder
         private(set) var codingPath: [any CodingKey]
 
-        init(referencing encoder: MessagePackEncoder, codingPath: [any CodingKey]) {
+        init(referencing encoder: BaseMessagePackEncoder, codingPath: [any CodingKey]) {
             self.encoder = encoder
             self.codingPath = codingPath
         }
@@ -420,7 +422,7 @@ extension MessagePackEncoder {
         }
     }
 
-    final class MessagePackReferencingKeyedEncoder<Key: CodingKey>: MessagePackEncoder, @unchecked Sendable {
+    final class MessagePackReferencingKeyedEncoder<Key: CodingKey>: BaseMessagePackEncoder, @unchecked Sendable {
         private let container: KeyedContainer<Key>
         private let key: CodingKey
 
@@ -435,7 +437,7 @@ extension MessagePackEncoder {
         }
     }
 
-    final class MessagePackReferencingUnkeyedEncoder: MessagePackEncoder, @unchecked Sendable {
+    final class MessagePackReferencingUnkeyedEncoder: BaseMessagePackEncoder, @unchecked Sendable {
         private let container: UnkeyedContainer
         private let index: Int
 
