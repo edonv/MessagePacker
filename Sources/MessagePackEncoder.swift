@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class MessagePackEncoder: @unchecked Sendable, Encoder {
+public class MessagePackEncoder: @unchecked Sendable, Encoder {
     public private(set) var codingPath: [any CodingKey] = []
     public private(set) var userInfo: [CodingUserInfoKey : Any] = [:]
     fileprivate var storage = MessagePackStorage()
@@ -420,7 +420,7 @@ extension MessagePackEncoder {
         }
     }
 
-    class MessagePackReferencingKeyedEncoder<Key: CodingKey>: MessagePackEncoder {
+    final class MessagePackReferencingKeyedEncoder<Key: CodingKey>: MessagePackEncoder, @unchecked Sendable {
         private let container: KeyedContainer<Key>
         private let key: CodingKey
 
@@ -435,7 +435,7 @@ extension MessagePackEncoder {
         }
     }
 
-    class MessagePackReferencingUnkeyedEncoder: MessagePackEncoder {
+    final class MessagePackReferencingUnkeyedEncoder: MessagePackEncoder, @unchecked Sendable {
         private let container: UnkeyedContainer
         private let index: Int
 
