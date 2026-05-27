@@ -8,7 +8,7 @@
 
 import Foundation
 
-open class MessagePackEncoder: Encoder {
+public class MessagePackEncoder: Encoder {
     public var codingPath: [CodingKey] = []
     public var userInfo: [CodingUserInfoKey : Any] = [:]
     fileprivate var storage = MessagePackStorage()
@@ -33,7 +33,7 @@ open class MessagePackEncoder: Encoder {
         return SingleValueContainer(referencing: self, codingPath: codingPath)
     }
 
-    open func encode<T: Encodable>(_ value: T) throws -> Data {
+    public func encode<T: Encodable>(_ value: T) throws -> Data {
         return try box(value)
     }
 }
